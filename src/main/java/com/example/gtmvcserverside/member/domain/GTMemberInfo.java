@@ -57,16 +57,21 @@ public class GTMemberInfo extends GTBaseEntity {
     @Column(nullable = false)
     private String tel3;
 
+    /**
+     * 엔티티의 tel1~3으로부터 전화번호 형식으로 포매팅한 전화번호 문자열을 리턴하는 메소드
+     * @return {@code String} 포매팅 전화번호
+     */
     public String getFormatPhoneNumber(){
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         return sb.append(tel1).append("-").append(tel2).append("-").append(tel3).toString();
     }
 
     /**
-     *
-     * @param joinInRequest
-     * @param accountInfoRepository
-     * @return
+     * {@code GTJoinInRequest} DTO로 부터 엔티티 객체를 생성할 수 있는 스태틱 메소드
+     * 계정 ID 여부 확인을 포함하며, valid는 {@code GTJoinInRequest}에서 어노테이션 형식으로 진행.
+     * @param joinInRequest 회원가입 요청 객체
+     * @param accountInfoRepository 계정정보 DAO (이미 있는 계정 확인)
+     * @return {@code GTMemberInfo} 회원 정보 엔티티 객체
      */
     public static GTMemberInfo fromJoinInDTO(GTJoinInRequest joinInRequest, GTAccountInfoRepository accountInfoRepository) {
 
@@ -115,6 +120,11 @@ public class GTMemberInfo extends GTBaseEntity {
 
     }
 
+    /**
+     * 생년월일 데이터로부터 나이를 구하는 메소드
+     * @param birthOfDate {@code LocalDate} 타입의 생년월일
+     * @return {@code int} 나이
+     */
     private static int getAgeFromBirthOfDate(LocalDate birthOfDate){
         LocalDate curDate = LocalDate.now();
         return Period.between(birthOfDate, curDate).getYears();
