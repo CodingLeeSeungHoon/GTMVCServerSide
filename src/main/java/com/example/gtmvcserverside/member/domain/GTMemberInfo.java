@@ -4,18 +4,17 @@ import com.example.gtmvcserverside.auth.domain.GTAccountInfo;
 import com.example.gtmvcserverside.auth.repository.GTAccountInfoRepository;
 import com.example.gtmvcserverside.common.entity.GTBaseEntity;
 import com.example.gtmvcserverside.member.dto.GTJoinInRequest;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Optional;
 
-@Entity
+@Entity(name = "gt_member_info")
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class GTMemberInfo extends GTBaseEntity {
 
@@ -25,6 +24,7 @@ public class GTMemberInfo extends GTBaseEntity {
 
     @Getter
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
     private GTAccountInfo accountInfo;
 
     @Getter
@@ -61,7 +61,10 @@ public class GTMemberInfo extends GTBaseEntity {
      * 엔티티의 tel1~3으로부터 전화번호 형식으로 포매팅한 전화번호 문자열을 리턴하는 메소드
      * @return {@code String} 포매팅 전화번호
      */
-    public String getFormatPhoneNumber(){
+    public String getFormatPhoneNumber() throws IllegalStateException {
+        if(tel1 == null || tel2 == null || tel3 == null){
+            throw new IllegalStateException("엔티티 객체 내에 저장된 전화번호가 없습니다, 다시 확인해주세요.");
+        }
         StringBuilder sb = new StringBuilder();
         return sb.append(tel1).append("-").append(tel2).append("-").append(tel3).toString();
     }
@@ -73,14 +76,7 @@ public class GTMemberInfo extends GTBaseEntity {
      * @param accountInfoRepository 계정정보 DAO (이미 있는 계정 확인)
      * @return {@code GTMemberInfo} 회원 정보 엔티티 객체
      */
-    public static GTMemberInfo fromJoinInDTO(GTJoinInRequest joinInRequest, GTAccountInfoRepository accountInfoRepository) {
-
-        assert joinInRequest.getAccountID() != null;
-        assert joinInRequest.getAccountPW() != null;
-        assert joinInRequest.getName() != null;
-        assert joinInRequest.getEmail() != null;
-        assert joinInRequest.getPhoneNumber() != null;
-        assert joinInRequest.getDateOfBirth() != null;
+    public static GTMemberInfo fromJoinInDTO(@Validated GTJoinInRequest joinInRequest, GTAccountInfoRepository accountInfoRepository) throws RuntimeException {
 
         // 계정 ID가 이미 있는지 확인하기
         String requestAccountID = joinInRequest.getAccountID();

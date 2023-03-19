@@ -10,7 +10,6 @@ public class GTJoinInValidator implements ConstraintValidator<ValidateJoinInDTO,
 
     @Override
     public boolean isValid(GTJoinInRequest value, ConstraintValidatorContext context) {
-        Optional.ofNullable(value);
         return false;
     }
 

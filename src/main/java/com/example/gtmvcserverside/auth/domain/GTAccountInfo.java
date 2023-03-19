@@ -1,6 +1,7 @@
 package com.example.gtmvcserverside.auth.domain;
 
 import com.example.gtmvcserverside.auth.dto.GTAuthLoginRequest;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,9 +13,10 @@ import java.util.Optional;
 
 
 @Slf4j
-@Entity
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
+@Entity(name = "gt_account_info")
 public class GTAccountInfo {
 
     @Id
@@ -22,7 +24,7 @@ public class GTAccountInfo {
     private long id;
 
     @Getter
-    @Column(name = "account_id", unique = true)
+    @Column(name = "account_id")
     private String accountID;
 
     @Getter
