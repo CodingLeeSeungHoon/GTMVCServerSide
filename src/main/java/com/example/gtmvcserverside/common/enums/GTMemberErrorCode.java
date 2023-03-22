@@ -12,8 +12,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum GTMemberErrorCode implements GTErrorCode{
-    ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "Already exist member, try to find your account"),
-    ALREADY_EXIST_ID(HttpStatus.CONFLICT, "Already exist id, try to choice another id")
+    ALREADY_EXIST_MEMBER(HttpStatus.FORBIDDEN, "Already exist member, try to find your account"),
+    ALREADY_EXIST_ID(HttpStatus.FORBIDDEN, "Already exist id, try to choice another id"),
+
+    INVALID_PHONE_FORMAT(HttpStatus.BAD_REQUEST, "Your phone number format is bad, plz fix like this 000-0000-0000")
     ;
 
     private final HttpStatus httpStatus;

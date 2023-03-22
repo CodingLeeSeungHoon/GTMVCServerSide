@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GTControllerAdvice extends ResponseEntityExceptionHandler {
 
+    /* ExceptionHandler Space */
+
     /**
      * {@code IllegalArgumentException}에 대해 전역적으로 제어하는 핸들러입니다.<br>
      * 내부적으로 {@code handleExceptionInternal(final GTErrorCode errorCode, String message)}를 호출합니다.<br>
@@ -63,6 +65,9 @@ public class GTControllerAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(errorCode, ex);
     }
 
+
+    /* handleExceptionInternal Method Space */
+
     private ResponseEntity<GTErrorResponse> handleExceptionInternal(final GTErrorCode errorCode){
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponseByErrorCode(errorCode));
@@ -77,6 +82,8 @@ public class GTControllerAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponseByErrorCodeAndException(errorCode, ex));
     }
+
+    /* makeErrorResponse Method Space */
 
     private GTErrorResponse makeErrorResponseByErrorCode(final GTErrorCode errorCode){
         return GTErrorResponse.builder()

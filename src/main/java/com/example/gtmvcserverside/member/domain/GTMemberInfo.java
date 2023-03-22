@@ -3,7 +3,10 @@ package com.example.gtmvcserverside.member.domain;
 import com.example.gtmvcserverside.auth.domain.GTAccountInfo;
 import com.example.gtmvcserverside.auth.repository.GTAccountInfoRepository;
 import com.example.gtmvcserverside.common.entity.GTBaseEntity;
+import com.example.gtmvcserverside.common.enums.GTMemberErrorCode;
+import com.example.gtmvcserverside.common.exception.GTApiException;
 import com.example.gtmvcserverside.member.dto.GTJoinInRequest;
+import com.example.gtmvcserverside.member.repository.GTMemberInfoRepository;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,8 +27,12 @@ public class GTMemberInfo extends GTBaseEntity {
 
     @Getter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", unique = true)
     private GTAccountInfo accountInfo;
+
+    @Getter
+    @Column(nullable = false)
+    private String name;
 
     @Getter
     @Column(nullable = false)
@@ -71,23 +78,15 @@ public class GTMemberInfo extends GTBaseEntity {
 
     /**
      * {@code GTJoinInRequest} DTO로 부터 엔티티 객체를 생성할 수 있는 스태틱 메소드
-     * 계정 ID 여부 확인을 포함하며, valid는 {@code GTJoinInRequest}에서 어노테이션 형식으로 진행.
      * @param joinInRequest 회원가입 요청 객체
-     * @param accountInfoRepository 계정정보 DAO (이미 있는 계정 확인)
      * @return {@code GTMemberInfo} 회원 정보 엔티티 객체
      */
-    public static GTMemberInfo fromJoinInDTO(@Validated GTJoinInRequest joinInRequest, GTAccountInfoRepository accountInfoRepository) throws RuntimeException {
-
-        // 계정 ID가 이미 있는지 확인하기
-        String requestAccountID = joinInRequest.getAccountID();
-        if(!accountInfoRepository.existsByAccountID(requestAccountID)){
-            throw new EntityExistsException("이미 존재하는 계정입니다.");
-        }
+    public static GTMemberInfo fromJoinInDTO(@Validated GTJoinInRequest joinInRequest) throws GTApiException {
 
         // Phone format check
         String[] phoneNumParts = joinInRequest.getPhoneNumber().split("-");
         if(phoneNumParts.length != 3){
-            throw new IllegalArgumentException("올바른 전화번호 형식이 아닙니다 '-'를 포함한 값이 들어와야 합니다.");
+            throw new GTApiException(GTMemberErrorCode.INVALID_PHONE_FORMAT);
         }
 
         // new account info create.
@@ -113,8 +112,8 @@ public class GTMemberInfo extends GTBaseEntity {
                 .tel2(phoneNumParts[1])
                 .tel3(phoneNumParts[2])
                 .build();
-
     }
+
 
     /**
      * 생년월일 데이터로부터 나이를 구하는 메소드

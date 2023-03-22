@@ -1,6 +1,7 @@
 package com.example.gtmvcserverside.auth.domain;
 
 import com.example.gtmvcserverside.auth.dto.GTAuthLoginRequest;
+import com.example.gtmvcserverside.member.dto.GTJoinInRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
