@@ -3,12 +3,15 @@ package com.example.gtmvcserverside.common.exception;
 import com.example.gtmvcserverside.common.dto.GTErrorResponse;
 import com.example.gtmvcserverside.common.enums.GTCommonErrorCode;
 import com.example.gtmvcserverside.common.enums.GTErrorCode;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -29,6 +32,7 @@ public class GTControllerAdvice extends ResponseEntityExceptionHandler {
      * @return {@code ResponseEntity<GTErrorResponse>}
      */
     @ExceptionHandler(value = {IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<GTErrorResponse> handleIllegalArgumentException(Exception ex){
         log.warn(ex.getMessage());
         GTErrorCode errorCode = GTCommonErrorCode.INVALID_PARAMETER;
@@ -45,6 +49,10 @@ public class GTControllerAdvice extends ResponseEntityExceptionHandler {
      * @return {@code ResponseEntity<GTErrorResponse>}
      */
     @ExceptionHandler(value = {GTApiException.class})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Bad Request!"),
+            @ApiResponse(responseCode = "403", description = "Forbidden! Already Exist"),
+    })
     public ResponseEntity<GTErrorResponse> handleExceptionFromAPIMethod(GTApiException ex){
         GTErrorCode errorCode = ex.getErrorCode();
         return handleExceptionInternal(errorCode);

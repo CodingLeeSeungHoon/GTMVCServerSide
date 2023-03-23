@@ -4,22 +4,37 @@ server:
 spring:
   application:
     name: Tomcat Server
+
+  security:
+    user:
+      name: user
+      password: 1234
+
   datasource:
     url: jdbc:mysql://localhost:3306/god_tong?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: 1234
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: create
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL5Dialect
-
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+
+springdoc:
+  override-with-generic-response: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
+    path: "swagger.html"

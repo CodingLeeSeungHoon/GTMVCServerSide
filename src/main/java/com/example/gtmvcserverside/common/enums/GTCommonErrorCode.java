@@ -3,6 +3,7 @@ package com.example.gtmvcserverside.common.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * 공통 에러 코드 Enum 추상화 인터페이스인 {@code GTErrorCode}를 구현한 Enum 클래스<br>
