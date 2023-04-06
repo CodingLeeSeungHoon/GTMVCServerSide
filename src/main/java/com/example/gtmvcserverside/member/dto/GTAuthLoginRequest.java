@@ -1,10 +1,8 @@
-package com.example.gtmvcserverside.auth.dto;
+package com.example.gtmvcserverside.member.dto;
 
-import com.example.gtmvcserverside.auth.domain.GTAccountInfo;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 @Getter
 public class GTAuthLoginRequest {

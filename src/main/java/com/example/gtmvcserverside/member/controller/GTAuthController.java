@@ -1,15 +1,13 @@
-package com.example.gtmvcserverside.auth.controller;
+package com.example.gtmvcserverside.member.controller;
 
-import com.example.gtmvcserverside.auth.dto.GTAuthLoginRequest;
-import com.example.gtmvcserverside.auth.service.GTAuthService;
+import com.example.gtmvcserverside.member.dto.GTAuthLoginRequest;
+import com.example.gtmvcserverside.member.service.GTAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 @Slf4j
 @RequiredArgsConstructor

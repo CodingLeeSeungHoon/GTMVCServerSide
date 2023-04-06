@@ -1,13 +1,11 @@
-package com.example.gtmvcserverside.auth.domain;
+package com.example.gtmvcserverside.member.domain;
 
-import com.example.gtmvcserverside.auth.dto.GTAuthLoginRequest;
-import com.example.gtmvcserverside.member.dto.GTJoinInRequest;
+import com.example.gtmvcserverside.member.dto.GTAuthLoginRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import java.util.Optional;

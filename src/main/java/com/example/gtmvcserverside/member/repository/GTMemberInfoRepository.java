@@ -1,10 +1,8 @@
 package com.example.gtmvcserverside.member.repository;
 
-import com.example.gtmvcserverside.auth.domain.GTAccountInfo;
+import com.example.gtmvcserverside.member.domain.GTAccountInfo;
 import com.example.gtmvcserverside.member.domain.GTMemberInfo;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;

@@ -1,6 +1,5 @@
 package com.example.gtmvcserverside.member.domain;
 
-import com.example.gtmvcserverside.auth.domain.GTAccountInfo;
 import com.example.gtmvcserverside.common.entity.GTBaseEntity;
 import com.example.gtmvcserverside.common.enums.GTMemberErrorCode;
 import com.example.gtmvcserverside.common.exception.GTApiException;

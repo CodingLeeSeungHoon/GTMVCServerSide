@@ -1,6 +1,6 @@
 package com.example.gtmvcserverside.member.service;
 
-import com.example.gtmvcserverside.auth.repository.GTAccountInfoRepository;
+import com.example.gtmvcserverside.member.repository.GTAccountInfoRepository;
 import com.example.gtmvcserverside.common.enums.GTMemberErrorCode;
 import com.example.gtmvcserverside.common.exception.GTApiException;
 import com.example.gtmvcserverside.member.domain.GTMemberInfo;

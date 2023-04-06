@@ -1,4 +1,4 @@
-package com.example.gtmvcserverside.auth.role;
+package com.example.gtmvcserverside.member.role;
 
 public enum GTUserRole {
     ROLE_FAN,

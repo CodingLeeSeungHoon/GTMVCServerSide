@@ -1,4 +1,4 @@
-package com.example.gtmvcserverside.auth.config;
+package com.example.gtmvcserverside.member.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;

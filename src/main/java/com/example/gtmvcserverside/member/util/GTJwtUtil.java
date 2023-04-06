@@ -1,4 +1,4 @@
-package com.example.gtmvcserverside.auth.util;
+package com.example.gtmvcserverside.member.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

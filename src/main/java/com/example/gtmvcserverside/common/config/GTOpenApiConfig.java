@@ -5,6 +5,9 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Swagger 기본 설정을 위한 설정 클래스입니다.
+ */
 @Configuration
 public class GTOpenApiConfig {
 
