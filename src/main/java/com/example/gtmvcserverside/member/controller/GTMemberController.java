@@ -1,8 +1,13 @@
 package com.example.gtmvcserverside.member.controller;
 
+import com.example.gtmvcserverside.common.dto.GTErrorResponse;
+import com.example.gtmvcserverside.common.enums.GTErrorCode;
+import com.example.gtmvcserverside.common.exception.GTApiException;
+import com.example.gtmvcserverside.common.jsonview.GTJsonView;
 import com.example.gtmvcserverside.member.dto.GTJoinInRequest;
 import com.example.gtmvcserverside.member.dto.GTJoinInResponse;
 import com.example.gtmvcserverside.member.service.GTMemberService;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -39,5 +44,34 @@ public class GTMemberController {
         return memberService.joinInGodTongService(joinInRequest);
     }
 
+
+
+
+    @ExceptionHandler(value = {GTApiException.class})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "403", description = "Forbidden! Already Exist ID or Member"),
+    })
+    @JsonView(GTJsonView.Common.class)
+    public ResponseEntity<GTErrorResponse> handleExceptionFromGTMemberController(GTApiException ex){
+        GTErrorCode errorCode = ex.getErrorCode();
+        String detailErrorMessage = ex.getMessage();
+
+        return handleExceptionInternal(errorCode, detailErrorMessage);
+    }
+
+    private ResponseEntity<GTErrorResponse> handleExceptionInternal(GTErrorCode errorCode, String detailMessage){
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(makeErrorResponse(errorCode, detailMessage));
+    }
+
+    private GTErrorResponse makeErrorResponse(GTErrorCode errorCode, String detailMessage){
+        StringBuilder sb = new StringBuilder();
+        sb.append(errorCode.getMessage()).append(" : ").append(detailMessage);
+
+        return GTErrorResponse.builder()
+                .code(errorCode.name())
+                .message(sb.toString())
+                .build();
+    }
 
 }

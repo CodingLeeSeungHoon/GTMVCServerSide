@@ -38,3 +38,17 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
     path: "swagger.html"
+
+jwt:
+  secret: god-tong-service-backend-jwt-token-secret-key-made-by-LSH8569-Who-want-to-be-best-be-engineer
+  access:
+    token:
+      expiration:
+        time:
+          minutes: 10000
+  refresh:
+    token:
+      expiration:
+        time:
+          minutes: 10000
+

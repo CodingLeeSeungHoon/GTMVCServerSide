@@ -1,6 +1,9 @@
 package com.example.gtmvcserverside.common.dto;
 
+import com.example.gtmvcserverside.common.jsonview.GTJsonView;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +20,22 @@ import java.util.List;
  */
 @Getter
 @Builder
+@Schema(description = "GT의 에러 응답 객체")
 @RequiredArgsConstructor
 public class GTErrorResponse {
+
+    @Schema(description = "GT 커스텀 에러코드", example = "INVALID_PARAMETER")
+    @JsonView(GTJsonView.Common.class)
     private final String code;
+
+    @Schema(description = "GT 에러 상세메시지로, ErrorCode 내장 메시지 + Exception 메시지가 합쳐진 형태",
+            example = "Invalid parameter included :: 나이(age) 필드에는 1 이상의 숫자가 입력되어야 합니다.")
+    @JsonView(GTJsonView.Common.class)
     private final String message;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonView(GTJsonView.Hidden.class)
+    @Schema(description = "Validation Error 발생시 상세 필드 에러 기재", nullable = true)
     private final List<ValidationError> errors;
 
     @Getter

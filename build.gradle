@@ -30,6 +30,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+
     compileOnly 'org.projectlombok:lombok'
     implementation 'mysql:mysql-connector-java'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
