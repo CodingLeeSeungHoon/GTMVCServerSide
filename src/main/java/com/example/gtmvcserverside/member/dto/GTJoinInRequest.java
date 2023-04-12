@@ -1,10 +1,13 @@
 package com.example.gtmvcserverside.member.dto;
 
+import com.example.gtmvcserverside.member.enums.GTGender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,9 +18,9 @@ import java.time.LocalDate;
 @Schema(description = "GT 회원가입에 필요한 요청 DTO")
 public class GTJoinInRequest {
 
-    @NotBlank(message = "ID는 필수 입력사항입니다.")
-    @Schema(description = "계정 ID", example = "user1234")
-    private String accountID;
+    @Email(message = "입력한 이메일의 형식이 옳지 않습니다.")
+    @Schema(description = "이메일", example = "aaa@example.com")
+    private String email;
 
     @NotBlank(message = "PW는 필수 입력사항입니다.")
     @Schema(description = "계정 비밀번호", example = "Aabc1234!")
@@ -34,9 +37,10 @@ public class GTJoinInRequest {
     @Schema(description = "생년월일", example = "1998-11-11")
     private LocalDate dateOfBirth;
 
-    @Email(message = "입력한 이메일의 형식이 옳지 않습니다.")
-    @Schema(description = "이메일", example = "aaa@example.com")
-    private String email;
+    @NotNull
+    @Schema(description = "성별", example = "1")
+    @Enumerated(EnumType.ORDINAL)
+    private GTGender gender;
 
     @NotNull
     @Schema(description = "이름 공개 여부", example = "true")

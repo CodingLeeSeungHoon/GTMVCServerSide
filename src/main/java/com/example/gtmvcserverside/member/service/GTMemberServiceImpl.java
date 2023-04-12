@@ -35,8 +35,8 @@ public class GTMemberServiceImpl implements GTMemberService {
     public ResponseEntity<GTJoinInResponse> joinInGodTongService(final GTJoinInRequest joinInRequest) {
 
         // check already exist ID & Member
-        String requestID = joinInRequest.getAccountID();
-        if (isAlreadyExistID(requestID)) {
+        String requestEmail = joinInRequest.getEmail();
+        if (isAlreadyExistEmail(requestEmail)) {
             throw new GTApiException(GTMemberErrorCode.ALREADY_EXIST_ID);
         }
 
@@ -51,25 +51,25 @@ public class GTMemberServiceImpl implements GTMemberService {
                     .body(GTJoinInResponse.builder()
                             .description(String.format("%s님의 아이디 '%s'가 성공적으로 생성되었습니다.",
                                     createdMemberInfo.getName(),
-                                    createdMemberInfo.getAccountInfo().getAccountID()))
-                            .createdID(createdMemberInfo.getAccountInfo().getAccountID())
+                                    createdMemberInfo.getAccountInfo().getAccountEmail()))
+                            .createdID(createdMemberInfo.getAccountInfo().getAccountEmail())
                             .createdAt(createdMemberInfo.getCreatedAt())
                             .build());
         } catch (DataIntegrityViolationException ex){
-            // if conflict unique keys
+            // if conflict by unique keys
             throw new GTApiException(GTMemberErrorCode.ALREADY_EXIST_MEMBER);
         }
 
     }
 
     /**
-     * 이미 존재하는 ID 인지 확인하는 메소드입니다.
-     * @param requestID ID
-     * @return boolean 이미 존재하는 ID 여부
+     * 이미 존재하는 Email(ID) 인지 확인하는 메소드입니다.
+     * @param requestEmail Email
+     * @return boolean 이미 존재하는 Email 여부
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, readOnly = true)
-    public boolean isAlreadyExistID(String requestID) {
-        return accountInfoRepository.existsByAccountID(requestID);
+    public boolean isAlreadyExistEmail(String requestEmail) {
+        return accountInfoRepository.existsByAccountEmail(requestEmail);
     }
 
     /**

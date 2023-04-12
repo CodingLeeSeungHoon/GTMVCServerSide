@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface GTAccountInfoRepository extends JpaRepository<GTAccountInfo, Long> {
-    boolean existsByAccountID(String accountID);
-    Optional<GTAccountInfo> findByAccountID(String accountID);
+    boolean existsByAccountEmail(String accountEmail);
+    Optional<GTAccountInfo> findByAccountEmail(String accountEmail);
 }

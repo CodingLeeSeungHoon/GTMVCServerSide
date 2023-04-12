@@ -4,10 +4,12 @@ import com.example.gtmvcserverside.common.entity.GTBaseEntity;
 import com.example.gtmvcserverside.common.enums.GTMemberErrorCode;
 import com.example.gtmvcserverside.common.exception.GTApiException;
 import com.example.gtmvcserverside.member.dto.GTJoinInRequest;
+import com.example.gtmvcserverside.member.enums.GTGender;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Optional;
@@ -25,10 +27,12 @@ public class GTMemberInfo extends GTBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "MEMBER_ID")
     private long id;
 
     @Getter
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @NotNull
     @JoinColumn(name = "account_id", unique = true)
     private GTAccountInfo accountInfo;
 
@@ -37,11 +41,7 @@ public class GTMemberInfo extends GTBaseEntity {
     private String name;
 
     @Getter
-    @Column(nullable = false)
-    private String email;
-
-    @Getter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 4)
     private int age;
 
     @Getter
@@ -50,8 +50,13 @@ public class GTMemberInfo extends GTBaseEntity {
 
     @Getter
     @Setter
-    @Column
+    @Column(length = 20)
     private String nickName;
+
+    @Getter
+    @Enumerated(EnumType.ORDINAL)
+    @Column
+    private GTGender gender;
 
     @Getter
     @Column(nullable = false)
@@ -95,23 +100,26 @@ public class GTMemberInfo extends GTBaseEntity {
 
         // new account info create.
         GTAccountInfo requestAccountInfo = GTAccountInfo.builder()
-                .accountID(joinInRequest.getAccountID())
+                .accountEmail(joinInRequest.getEmail())
                 .accountPW(joinInRequest.getAccountPW())
                 .build();
 
         // nickname is nullable.
         String requestNickName = joinInRequest.getNickName();
+
         boolean canShowName = Optional.of(joinInRequest)
                 .map(GTJoinInRequest::isShowName)
                 .orElse(false);
 
+        GTGender gender = joinInRequest.getGender();
+
         return GTMemberInfo.builder()
                 .accountInfo(requestAccountInfo)
-                .email(joinInRequest.getEmail())
                 .age(getAgeFromBirthOfDate(joinInRequest.getDateOfBirth()))
                 .birthOfDate(joinInRequest.getDateOfBirth())
                 .nickName(requestNickName)
                 .showName(canShowName)
+                .gender(gender)
                 .tel1(phoneNumParts[0])
                 .tel2(phoneNumParts[1])
                 .tel3(phoneNumParts[2])

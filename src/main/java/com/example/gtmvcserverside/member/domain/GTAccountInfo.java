@@ -1,16 +1,18 @@
 package com.example.gtmvcserverside.member.domain;
 
-import com.example.gtmvcserverside.member.dto.GTAuthLoginRequest;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.example.gtmvcserverside.member.enums.GTUserRole;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-
+/**
+ * 계정 정보(Email, PW, 역할(권한))을 포함한 엔티티입니다.
+ * - {@code GTUserRoleInfo}와 N:M 관계 매핑, {@code GTAccountUserRoleInfo} 테이블을 활용해 N:1, 1:M으로 분리
+ *
+ */
 @Slf4j
 @Builder
 @NoArgsConstructor
@@ -20,40 +22,35 @@ public class GTAccountInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ACCOUNT_ID")
     private long id;
 
     @Getter
-    @Column(name = "account_id")
-    private String accountID;
+    @Column(name = "account_email", unique = true)
+    private String accountEmail;
 
     @Getter
     @Column(name = "account_pw")
     private String accountPW;
 
-    /**
-     * {@code GTAuthLoginRequest}로 부터 Entity를 만들어내는 정적 팩토리 메서드<br>
-     * 내부에 validation 로직이 포함되어 있음. <br>
-     * @param loginRequestDTO 로그인 요청 DTO
-     * @return {@code GTAccountInfo} 계정 정보 엔티티
-     * @throws IllegalArgumentException 부적절한 요청에 대한 예외 방출
-     */
-    public static GTAccountInfo fromLoginDTO(GTAuthLoginRequest loginRequestDTO) throws IllegalArgumentException{
+    @Builder.Default
+    @OneToMany(mappedBy = "accountInfo", fetch = FetchType.LAZY)
+    private List<GTAccountUserRoleInfo> roleByThisAccountList = new ArrayList<>();
 
-        // validation
-        String requestID = Optional.ofNullable(loginRequestDTO)
-                .map(GTAuthLoginRequest::getAccountID)
-                .orElseThrow(() -> new IllegalArgumentException("요청에 ID 값을 포함하고 있지 않습니다."));
-
-        String requestPW = Optional.of(loginRequestDTO)
-                .map(GTAuthLoginRequest::getAccountPW)
-                .orElseThrow(() -> new IllegalArgumentException("요청에 PW 값을 포함하고 있지 않습니다."));
-
-        // return
-        return GTAccountInfo.builder()
-                .accountID(requestID)
-                .accountPW(requestPW)
-                .build();
+    public List<GTUserRole> getRoles(){
+        return roleByThisAccountList.stream()
+                .map(GTAccountUserRoleInfo::getUserRole)
+                .map(GTUserRoleInfo::getUserRole)
+                .collect(Collectors.toList());
     }
 
+    /**
+     * 계정 정보에 역할을 추가하기 위한 컨비니언스 메서드입니다.<br>
+     * @param accountUserRoleInfo 계정정보와 GTUserRole 이 담긴 객체
+     */
+    public void addRole(GTAccountUserRoleInfo accountUserRoleInfo){
+        accountUserRoleInfo.setAccountInfo(this);
+        this.roleByThisAccountList.add(accountUserRoleInfo);
+    }
 
 }

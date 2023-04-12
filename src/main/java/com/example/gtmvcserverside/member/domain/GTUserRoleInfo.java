@@ -1,10 +1,11 @@
 package com.example.gtmvcserverside.member.domain;
 
-import com.example.gtmvcserverside.member.role.GTUserRole;
+import com.example.gtmvcserverside.member.enums.GTUserRole;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * GT 회원의 권한과 관련된 역할 규정을 위한 엔티티 클래스 <br>
@@ -21,9 +22,14 @@ public class GTUserRoleInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ROLE_ID")
     private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private GTUserRole userRole;
+
+    @OneToMany(mappedBy = "userRole")
+    private List<GTAccountUserRoleInfo> accountWithThisRoleList;
+
 }

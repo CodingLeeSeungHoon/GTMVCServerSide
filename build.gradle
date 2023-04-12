@@ -31,11 +31,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'org.projectlombok:lombok:1.18.20'
 
     compileOnly 'org.projectlombok:lombok'
     implementation 'mysql:mysql-connector-java'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok' // can use slf4j in test code
+    testAnnotationProcessor 'org.projectlombok:lombok' // can use slf4j in test code
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
