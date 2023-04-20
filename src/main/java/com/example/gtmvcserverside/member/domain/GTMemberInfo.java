@@ -6,6 +6,7 @@ import com.example.gtmvcserverside.common.exception.GTApiException;
 import com.example.gtmvcserverside.member.dto.GTJoinInRequest;
 import com.example.gtmvcserverside.member.enums.GTGender;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ import java.util.Optional;
                 name = "member_unique_1",
                 columnNames = {"name", "tel1", "tel2", "tel3"})}
 )
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class GTMemberInfo extends GTBaseEntity {
@@ -30,44 +32,40 @@ public class GTMemberInfo extends GTBaseEntity {
     @Column(name = "MEMBER_ID")
     private long id;
 
-    @Getter
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @NotNull
     @JoinColumn(name = "account_id", unique = true)
     private GTAccountInfo accountInfo;
 
-    @Getter
     @Column(nullable = false, length = 10)
     private String name;
 
-    @Getter
     @Column(nullable = false, length = 4)
     private int age;
 
-    @Getter
     @Column(nullable = false)
     private LocalDate birthOfDate;
 
-    @Getter
     @Setter
     @Column(length = 20)
     private String nickName;
 
-    @Getter
     @Enumerated(EnumType.ORDINAL)
     @Column
     private GTGender gender;
 
-    @Getter
     @Column(nullable = false)
     private boolean showName;
 
+    @Getter(AccessLevel.NONE)
     @Column(nullable = false, length = 3)
     private String tel1;
 
+    @Getter(AccessLevel.NONE)
     @Column(nullable = false, length = 4)
     private String tel2;
 
+    @Getter(AccessLevel.NONE)
     @Column(nullable = false, length = 4)
     private String tel3;
 
@@ -90,7 +88,9 @@ public class GTMemberInfo extends GTBaseEntity {
      * @param joinInRequest 회원가입 요청 객체
      * @return {@code GTMemberInfo} 회원 정보 엔티티 객체
      */
-    public static GTMemberInfo fromJoinInDTO(@Validated GTJoinInRequest joinInRequest) throws GTApiException {
+    public static GTMemberInfo fromJoinInDTO(
+            @Validated GTJoinInRequest joinInRequest,
+            PasswordEncoder passwordEncoder) throws GTApiException {
 
         // Phone format check
         String[] phoneNumParts = joinInRequest.getPhoneNumber().split("-");
@@ -98,10 +98,12 @@ public class GTMemberInfo extends GTBaseEntity {
             throw new GTApiException(GTMemberErrorCode.INVALID_PHONE_FORMAT);
         }
 
+        String encodedPassword = passwordEncoder.encode(joinInRequest.getAccountPW());
+
         // new account info create.
         GTAccountInfo requestAccountInfo = GTAccountInfo.builder()
                 .accountEmail(joinInRequest.getEmail())
-                .accountPW(joinInRequest.getAccountPW())
+                .accountPW(encodedPassword)
                 .build();
 
         // nickname is nullable.

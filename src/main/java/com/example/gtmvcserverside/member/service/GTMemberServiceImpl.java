@@ -1,15 +1,21 @@
 package com.example.gtmvcserverside.member.service;
 
+import com.example.gtmvcserverside.member.domain.GTAccountUserRoleInfo;
+import com.example.gtmvcserverside.member.enums.GTUserRole;
 import com.example.gtmvcserverside.member.repository.GTAccountInfoRepository;
 import com.example.gtmvcserverside.common.enums.GTMemberErrorCode;
 import com.example.gtmvcserverside.common.exception.GTApiException;
 import com.example.gtmvcserverside.member.domain.GTMemberInfo;
 import com.example.gtmvcserverside.member.dto.GTJoinInRequest;
 import com.example.gtmvcserverside.member.dto.GTJoinInResponse;
+import com.example.gtmvcserverside.member.repository.GTAccountUserRoleInfoRepository;
 import com.example.gtmvcserverside.member.repository.GTMemberInfoRepository;
+import com.example.gtmvcserverside.member.repository.GTUserRoleInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -23,6 +29,12 @@ public class GTMemberServiceImpl implements GTMemberService {
     private final GTMemberInfoRepository memberInfoRepository;
 
     private final GTAccountInfoRepository accountInfoRepository;
+
+    private final GTUserRoleInfoRepository userRoleInfoRepository;
+
+    private final GTAccountUserRoleInfoRepository accountUserRoleInfoRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final EntityManager em;
 
@@ -46,8 +58,16 @@ public class GTMemberServiceImpl implements GTMemberService {
 
         // save new member
         try{
-            GTMemberInfo createdMemberInfo = memberInfoRepository.save(GTMemberInfo.fromJoinInDTO(joinInRequest));
-            return ResponseEntity.ok()
+            GTMemberInfo createdMemberInfo = memberInfoRepository.save(
+                    GTMemberInfo.fromJoinInDTO(joinInRequest, passwordEncoder));
+
+            GTAccountUserRoleInfo newAccountUserRoleInfo = new GTAccountUserRoleInfo();
+            newAccountUserRoleInfo.addAccountInfo(createdMemberInfo.getAccountInfo());
+            newAccountUserRoleInfo.addUserRole(GTUserRole.ROLE_FAN.convertToUserRoleInfo(userRoleInfoRepository));
+
+            accountUserRoleInfoRepository.save(newAccountUserRoleInfo);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
                     .body(GTJoinInResponse.builder()
                             .description(String.format("%s님의 아이디 '%s'가 성공적으로 생성되었습니다.",
                                     createdMemberInfo.getName(),

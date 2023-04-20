@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,10 +27,11 @@ public class GTUserRoleInfo {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 20, name = "user_role", unique = true)
     private GTUserRole userRole;
 
-    @OneToMany(mappedBy = "userRole")
-    private List<GTAccountUserRoleInfo> accountWithThisRoleList;
+    @OneToMany(mappedBy = "userRoleInfo")
+    @Builder.Default
+    private List<GTAccountUserRoleInfo> accountWithThisRoleList = new ArrayList<>();
 
 }

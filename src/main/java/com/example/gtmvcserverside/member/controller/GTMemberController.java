@@ -45,8 +45,6 @@ public class GTMemberController {
     }
 
 
-
-
     @ExceptionHandler(value = {GTApiException.class})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "403", description = "Forbidden! Already Exist ID or Member"),

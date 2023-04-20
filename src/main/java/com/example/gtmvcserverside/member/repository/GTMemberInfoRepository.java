@@ -13,7 +13,7 @@ public interface GTMemberInfoRepository extends JpaRepository<GTMemberInfo, Long
 
     Optional<GTMemberInfo> findGTMemberInfoByAccountInfo(GTAccountInfo accountInfo);
 
-    // boolean existGTMemberInfoByNameAndFormatPhoneNumberAndBirthOfDate(String name, String formatPhoneNumber, LocalDate birthOfDate);
+    Optional<GTMemberInfo> findByName(String username);
 
     boolean existsByNameAndTel1AndTel2AndTel3AndBirthOfDate(String name, String tel1, String tel2, String tel3, LocalDate birthOfDate);
 }

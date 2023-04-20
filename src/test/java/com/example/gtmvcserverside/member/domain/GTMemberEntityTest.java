@@ -5,6 +5,7 @@ import com.example.gtmvcserverside.member.enums.GTUserRole;
 import com.example.gtmvcserverside.member.repository.GTAccountInfoRepository;
 import com.example.gtmvcserverside.member.repository.GTAccountUserRoleInfoRepository;
 import com.example.gtmvcserverside.member.repository.GTMemberInfoRepository;
+import com.example.gtmvcserverside.member.repository.GTUserRoleInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,19 +28,26 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class GTMemberEntityTest {
 
+    /* accountInfo */
     @Autowired
     private GTAccountInfoRepository accountInfoRepository;
 
+    /* memberInfo */
     @Autowired
     private GTMemberInfoRepository memberInfoRepository;
 
+    /* userRole */
+    @Autowired
+    private GTUserRoleInfoRepository userRoleInfoRepository;
+
+    /* userRole - accountInfo*/
     @Autowired
     private GTAccountUserRoleInfoRepository accountUserRoleInfoRepository;
 
     private GTAccountInfo mockAccountInfo;
 
     @BeforeEach
-    public void initMockAccountInfo(){
+    public void initMockAccountInfo() {
         this.mockAccountInfo = GTAccountInfo.builder()
                 .accountEmail("test@example.com")
                 .accountPW("1234")
@@ -45,17 +56,17 @@ class GTMemberEntityTest {
 
     @Test
     @DisplayName("🤔 1. 계정정보 생성 및 저장 테스트 : 성공 케이스")
-    public void testForCreateNewAccountInfoAndSave(){
+    public void testForCreateNewAccountInfoAndSave() {
         GTAccountInfo savedAccountInfo = accountInfoRepository.save(mockAccountInfo);
         assertEquals(savedAccountInfo.getAccountEmail(), "test@example.com");
         assertEquals(savedAccountInfo.getAccountPW(), "1234");
-        assertEquals(savedAccountInfo.getRoles().size(), 0);
+        assertEquals(savedAccountInfo.getRoleByThisAccountList().size(), 0);
 
     }
 
     @Test
     @DisplayName("🤔 2. 멤버정보 생성 및 저장 테스트 : 성공 케이스")
-    public void testForCreateNewMemberInfoAndSave(){
+    public void testForCreateNewMemberInfoAndSave() {
 
         GTMemberInfo mockMemberInfo = GTMemberInfo.builder()
                 .accountInfo(mockAccountInfo)
@@ -77,7 +88,7 @@ class GTMemberEntityTest {
 
         assertEquals(savedMemberInfo.getAge(), 26);
         assertEquals(savedMemberInfo.getBirthOfDate(), LocalDate.of(1998, 11, 6));
-        assertEquals(savedMemberInfo.getName(),"이승훈");
+        assertEquals(savedMemberInfo.getName(), "이승훈");
         assertEquals(savedMemberInfo.getGender(), GTGender.Male);
         assertEquals(savedMemberInfo.getFormatPhoneNumber(), "010-0000-0005");
         assertEquals(savedMemberInfo.getNickName(), "LSH8569");
@@ -90,7 +101,7 @@ class GTMemberEntityTest {
 
     @Test
     @DisplayName("🤔 3. 멤버정보 생성 및 저장 테스트 : 계정 정보 없이 등록")
-    public void testForCreateNewMemberInfoAndSave_WhenAccountInfoIsNull(){
+    public void testForCreateNewMemberInfoAndSave_WhenAccountInfoIsNull() {
 
         // AccountInfo is Null!
         GTMemberInfo mockMemberInfo = GTMemberInfo.builder()
@@ -106,13 +117,13 @@ class GTMemberEntityTest {
                 .build();
 
         // Because @NotNull, it is not DataIntegrityViolationException
-        Exception exception = assertThrows(ConstraintViolationException.class, ()-> memberInfoRepository.save(mockMemberInfo));
+        Exception exception = assertThrows(ConstraintViolationException.class, () -> memberInfoRepository.save(mockMemberInfo));
         log.info(exception.getMessage());
     }
 
     @Test
     @DisplayName("🤔 4. 멤버정보 생성 및 저장 테스트 : 이미 있는 계정(이메일) 정보")
-    public void testForCreateNewMemberInfoAndSave_WhenAlreadyExistAccountEmail(){
+    public void testForCreateNewMemberInfoAndSave_WhenAlreadyExistAccountEmail() {
 
         GTAccountInfo alreadyExistAccountInfo = accountInfoRepository.save(mockAccountInfo);
 
@@ -135,13 +146,13 @@ class GTMemberEntityTest {
                 .build();
 
         // DataIntegrityViolationException
-        Exception exception = assertThrows(DataIntegrityViolationException.class, ()-> memberInfoRepository.save(mockMemberInfo));
+        Exception exception = assertThrows(DataIntegrityViolationException.class, () -> memberInfoRepository.save(mockMemberInfo));
         log.info(exception.getMessage());
     }
 
     @Test
     @DisplayName("🤔 5. 멤버정보 생성 및 저장 테스트 : 이미 있는 계정(완전 동일) 정보")
-    public void testForCreateNewMemberInfoAndSave_WhenAlreadyExistAccount(){
+    public void testForCreateNewMemberInfoAndSave_WhenAlreadyExistAccount() {
 
         GTAccountInfo alreadyExistAccountInfo = accountInfoRepository.save(mockAccountInfo);
 
@@ -162,13 +173,13 @@ class GTMemberEntityTest {
                 .build();
 
         // DataIntegrityViolationException
-        Exception exception = assertThrows(DataIntegrityViolationException.class, ()-> memberInfoRepository.save(mockMemberInfo));
+        Exception exception = assertThrows(DataIntegrityViolationException.class, () -> memberInfoRepository.save(mockMemberInfo));
         log.info(exception.getMessage());
     }
 
     @Test
     @DisplayName("🤔 6. 멤버정보 생성 및 저장 테스트 : 이미 있는 계정(완전 동일) 정보 2")
-    public void testForCreateNewMemberInfoAndSave_WhenAlreadyExistAccount2(){
+    public void testForCreateNewMemberInfoAndSave_WhenAlreadyExistAccount2() {
 
         GTMemberInfo mockMemberInfo = GTMemberInfo.builder()
                 .accountInfo(mockAccountInfo)
@@ -205,14 +216,56 @@ class GTMemberEntityTest {
                 .build();
 
         // DataIntegrityViolationException
-        Exception exception = assertThrows(DataIntegrityViolationException.class, ()-> memberInfoRepository.save(mockMemberInfo2));
+        Exception exception = assertThrows(DataIntegrityViolationException.class, () -> memberInfoRepository.save(mockMemberInfo2));
         log.info(exception.getMessage());
     }
 
     @Test
     @DisplayName("🤔 7. 계정-유저 권한 생성 및 저장 테스트 : 성공 케이스")
-    public void testForCreateNewAccountUserRoleInfoAndSave(){
+    public void testForCreateNewAccountUserRoleInfoAndSave() {
+
+        // given
+        GTUserRoleInfo userRoleInfo = GTUserRole.ROLE_FAN.convertToUserRoleInfo(userRoleInfoRepository);
         GTAccountUserRoleInfo accountUserRoleInfo = new GTAccountUserRoleInfo();
+        accountUserRoleInfo.addAccountInfo(mockAccountInfo);
+        accountUserRoleInfo.addUserRole(userRoleInfo);
+
+        // when
+        GTAccountUserRoleInfo savedAccountUserRoleInfo =
+                accountUserRoleInfoRepository.save(accountUserRoleInfo);
+
+        GTUserRoleInfo savedUserRole = savedAccountUserRoleInfo.getUserRoleInfo();
+        GTAccountInfo savedAccountInfo = savedAccountUserRoleInfo.getAccountInfo();
+
+        // then
+        assertEquals(savedUserRole.getUserRole(), GTUserRole.ROLE_FAN);
+        assertEquals(savedUserRole.getAccountWithThisRoleList().size(), 1);
+        assertEquals(savedUserRole.getAccountWithThisRoleList().get(0), accountUserRoleInfo);
+
+
+        assertEquals(savedAccountInfo.getRoleByThisAccountList().size(), 1);
+        assertEquals(savedAccountInfo.getRoleByThisAccountList().get(0), accountUserRoleInfo);
+        assertEquals(savedAccountInfo.getAccountEmail(), mockAccountInfo.getAccountEmail());
+        assertEquals(savedAccountInfo.getAccountPW(), mockAccountInfo.getAccountPW());
+
+    }
+
+    @Test
+    @DisplayName("🤔 9. 유저 권한 DB 내용 체크 테스트")
+    public void testForCheckUserRoleIsValid() {
+
+        List<GTUserRoleInfo> userRoleInfos = userRoleInfoRepository.findAll();
+
+        assertEquals(userRoleInfos.size(), 4);
+
+        Long countOfMatchedWithEnums = userRoleInfos.stream()
+                .map(GTUserRoleInfo::getUserRole)
+                .peek(userRole -> log.info("Checked Enum Type : " + userRole))
+                .filter(userRole -> Arrays.asList(GTUserRole.values()).contains(userRole))
+                .count();
+
+        assertEquals(countOfMatchedWithEnums, 4);
+
     }
 
 }

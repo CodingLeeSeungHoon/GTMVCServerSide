@@ -24,6 +24,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
 
 logging:
   level:

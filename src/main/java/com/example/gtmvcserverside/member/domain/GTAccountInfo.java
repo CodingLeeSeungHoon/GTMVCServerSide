@@ -1,12 +1,10 @@
 package com.example.gtmvcserverside.member.domain;
 
-import com.example.gtmvcserverside.member.enums.GTUserRole;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 계정 정보(Email, PW, 역할(권한))을 포함한 엔티티입니다.
@@ -14,6 +12,7 @@ import java.util.stream.Collectors;
  *
  */
 @Slf4j
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,19 +36,13 @@ public class GTAccountInfo {
     @OneToMany(mappedBy = "accountInfo", fetch = FetchType.LAZY)
     private List<GTAccountUserRoleInfo> roleByThisAccountList = new ArrayList<>();
 
-    public List<GTUserRole> getRoles(){
-        return roleByThisAccountList.stream()
-                .map(GTAccountUserRoleInfo::getUserRole)
-                .map(GTUserRoleInfo::getUserRole)
-                .collect(Collectors.toList());
-    }
 
     /**
      * 계정 정보에 역할을 추가하기 위한 컨비니언스 메서드입니다.<br>
      * @param accountUserRoleInfo 계정정보와 GTUserRole 이 담긴 객체
      */
     public void addRole(GTAccountUserRoleInfo accountUserRoleInfo){
-        accountUserRoleInfo.setAccountInfo(this);
+        accountUserRoleInfo.addAccountInfo(this);
         this.roleByThisAccountList.add(accountUserRoleInfo);
     }
 

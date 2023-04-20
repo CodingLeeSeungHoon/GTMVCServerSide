@@ -1,7 +1,7 @@
 package com.example.gtmvcserverside.member.controller;
 
 import com.example.gtmvcserverside.member.dto.GTAuthLoginRequest;
-import com.example.gtmvcserverside.member.service.GTAuthService;
+import com.example.gtmvcserverside.member.service.GTUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GTAuthController {
 
-    private final GTAuthService authService;
+    private final GTUserDetailsService authService;
 
     @PostMapping("/login")
     public void loginInGodTong(@RequestBody @Validated GTAuthLoginRequest loginRequest){
-        log.info(loginRequest.getAccountID());
+        log.info(loginRequest.getAccountEmail());
         log.info(loginRequest.getAccountPW());
     }
 }
